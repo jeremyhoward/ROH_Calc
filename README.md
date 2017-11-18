@@ -2,6 +2,10 @@
 
 The ROH_Calc is a program that determines whether a region of the genome for an individual is in a ROH of a given length. The program reads in a parameter file that provides the location of necessary files along with quality control parameters. The program utilizes a sliding window approach and searches for stretches of continuous homozygous genotypes. The program output the proportion of the genome in an ROH, if a window or SNP is in a ROH across the genome for each individual.
 
+## To Compile and Run
+Compile: g++ ROH_CAL.cpp -o ROH_CALC
+Run: ./ROH_CALC param.txt
+
 ## Parameter File
 The parameter file contains all the user-defined variables. The program reads the parameter file by searching for keywords (i.e. in bold below) that are capitalized and then followed by a colon. Therefore any phrase that does not meet the search criteria is ignored when initializing parameters within the program.  All parameters are required for the program to run. A list of them and some information about them is outlined below:
 
