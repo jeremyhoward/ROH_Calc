@@ -13,6 +13,6 @@ The parameter file contains all the user-defined variables. The program reads th
 - **OUT_FILE:** Name of output files.
 
 ## Output Files
--Autozygosity: Autozygosity file. The first row of the file contains the ID and then the location of each SNP (chromosome_position). Any row after the file is then an indicator of whether that SNP is in an ROH. Not in an ROH is 0 and in an ROH is 1.
--ROH: ROH Window data. The first row of the file contains the ID and then location of each window (chromosome_ start position_end position). Any row after the file is then an indicator of whether that ROH window is a ROH or not. Not in an ROH is 0 and in an ROH is 1.
+- Autozygosity: Autozygosity file. The first row of the file contains the ID and then the location of each SNP (chromosome_position). Any row after the file is then an indicator of whether that SNP is in an ROH. Not in an ROH is 0 and in an ROH is 1.
+- ROH: ROH Window data. The first row of the file contains the ID and then location of each window (chromosome_ start position_end position). Any row after the file is then an indicator of whether that ROH window is a ROH or not. Not in an ROH is 0 and in an ROH is 1.
 - Summary: The first column is the animalID, second is homozygosity and third is proportion of genome in ROH based on cutoff you chose in parameter file.
