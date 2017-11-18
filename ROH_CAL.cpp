@@ -302,7 +302,7 @@ int main(int argc, char* argv[])
     file.open(OutputFileROH.c_str(), ios_base::out | ios_base::in);  // will not create file
     if (file.is_open())
     {
-        log_file << "\nWARNING, output file" <<OutputFileROH  << " already exists and will be overwritten"<< endl;
+        log_file << "\n - WARNING, output file" <<OutputFileROH  << " already exists and will be overwritten"<< endl;
         fstream check; check.open(OutputFileROH.c_str(), std::fstream::out | std::fstream::trunc); check.close();
     }
     file.close();
@@ -310,7 +310,7 @@ int main(int argc, char* argv[])
     file1.open(OutputFileAuto.c_str(), ios_base::out | ios_base::in);
     if (file1.is_open())
     {
-        log_file << "WARNING, output file" <<OutputFileAuto  << " already exists and will be overwritten"<< endl;
+        log_file << " - WARNING, output file" <<OutputFileAuto  << " already exists and will be overwritten"<< endl;
         fstream check; check.open(OutputFileAuto.c_str(), std::fstream::out | std::fstream::trunc); check.close();
     }
     file1.close();
@@ -318,7 +318,7 @@ int main(int argc, char* argv[])
     file2.open(OutputFileSummary.c_str(), ios_base::out | ios_base::in);
     if (file2.is_open())
     {
-        log_file << "WARNING, output file" << OutputFileSummary  << " already exists and will be overwritten"<< endl;
+        log_file << " - WARNING, output file" << OutputFileSummary  << " already exists and will be overwritten"<< endl << endl;
         fstream check; check.open(OutputFileSummary.c_str(), std::fstream::out | std::fstream::trunc); check.close();
     }
     file2.close();
@@ -427,7 +427,7 @@ int main(int argc, char* argv[])
         }
         if(RemoveSNP == "yes" && linenum == 1)
         {
-            log_file << "   - Removing SNP that weren't in ROH." << endl;
+            log_file << " - Removing SNP that weren't in ROH." << endl;
             stringstream outputstring(stringstream::out);
             outputstring << "ID";
             for(int i = 0; i < temp_chr.size(); i++)
@@ -437,15 +437,15 @@ int main(int argc, char* argv[])
             outputstring << endl;
             std::ofstream output2(OutputFileAuto.c_str(), std::ios_base::app | std::ios_base::out);
             output2 << outputstring.str(); outputstring.str(""); outputstring.clear();
-            log_file << "   - SNP that remain: " << temp_chr.size() << "." << endl;
-            log_file << "   - Number of lines read:";
+            log_file << " - SNP that remain: " << temp_chr.size() << "." << endl;
+            log_file << " - Number of lines read:"  << endl;
         }
         if(RemoveSNP == "no" && linenum == 1)
         {
-            log_file << "   - Did Not Remove SNP that weren't in ROH." << endl;
-            log_file << "   - Therefore should see 5 in autozygosity file (need to remove)." << endl;
-            log_file << "   - Number of SNP in autozygosity file: " << auto_status.size() << "." << endl;
-            log_file << "   - Number of lines read: " << endl;
+            log_file << " - Did Not Remove SNP that weren't in ROH." << endl;
+            log_file << " - Therefore should see 5 in autozygosity file (need to remove)." << endl;
+            log_file << " - Number of SNP in autozygosity file: " << auto_status.size() << "." << endl;
+            log_file << " - Number of lines read: " << endl;
             stringstream outputstring(stringstream::out);
             outputstring << "ID";
             for(int i = 0; i < auto_status.size(); i++)
@@ -551,10 +551,11 @@ int main(int argc, char* argv[])
         if(linenum % 5 == 0)
         {
             cout << "  - " << linenum << endl;
-            log_file << "  - " << linenum << endl;
+            log_file << "     - " << linenum << endl;
         }
         linenum++;
     }
+    
     cout << "- Finished calculating ROH and Autozygosity" << endl;
     cout << "- Program ended Normally" << endl;
     time_t full_end_time = time(0);
