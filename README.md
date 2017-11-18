@@ -4,6 +4,7 @@ The ROH_Calc is a program that determines whether a region of the genome for an 
 
 ## To Compile and Run
 Compile: g++ ROH_CAL.cpp -o ROH_CALC
+
 Run: ./ROH_CALC param.txt
 
 ## Parameter File
