@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
     cout<<"- FROM SNP DATA                                             -\n";
     cout<<"- Author: Jeremy T. Howard and Ben Lemmer                   -\n";
     cout<<"- Institution: NCSU                                         -\n";
-    cout<<"- Date: 8/12/2015                                           -\n";
+    cout<<"- Date: 5/04/2018                                           -\n";
     cout<<"-------------------------------------------------------------\n";
     ///////////////////////////////////////////////////
     ///       Read in Parameters from a file        ///
@@ -156,9 +156,13 @@ int main(int argc, char* argv[])
             size_t pos = parm[search].find(":", 0); parm[search].erase(0, pos + 2);
             parm[search].erase(remove(parm[search].begin(), parm[search].end(), ' '), parm[search].end()); roh_cutoff = atoi(parm[search].c_str());
             roh_cutoff = roh_cutoff * 1000000;
-            log_file << "ROH threshold: \t\t\t" << "'" << roh_cutoff << "'" << endl; break;
+            log_file << "ROH cutoff: \t\t\t" << "'" << roh_cutoff << "'" << endl; break;
         }
         search++; if(search >= parm.size()){cout << endl << "Couldn't find 'ROH_CUTOFF:' variable in parameter file!" << endl; exit (EXIT_FAILURE);}
+    }
+    if(roh_cutoff > 200000000)
+    {
+        cout << endl << "Too large of a ROH cutoff (" << roh_cutoff / 1000000 << "), should be in Megabases!!" << endl; exit (EXIT_FAILURE);
     }
     search = 0;
     while(1)
@@ -555,7 +559,6 @@ int main(int argc, char* argv[])
         }
         linenum++;
     }
-    
     cout << "- Finished calculating ROH and Autozygosity" << endl;
     cout << "- Program ended Normally" << endl;
     time_t full_end_time = time(0);
