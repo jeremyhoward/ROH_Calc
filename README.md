@@ -14,7 +14,7 @@ The parameter file contains all the user-defined variables. The program reads th
 - **MAP_FILE:** The name of the map file and has to be a single word. The format of the map file is chromosome for column 1 and nucleotide position for column 2. The map file has to be ordered by chromosome and nucleotide position within chromosome. The delimiter is a space.
 - **ROH_CUTOFF:** Refers to how long your ROH stretches have to be in Megabases in order to be called a ROH stretch. For example a value of “5” refers to a cutoff of 5 Mb.
 - **ROH_THRESHOLD:** This threshold is given to remove regions that have a small number of SNP and therefore could give rise to spurious results. The value refers to how many standard deviations from the mean number of SNP that are removed. For instance a value of 2 refers to any window that contains less than 2 * Average SNP will be removed.
-- **REMOVE_SNP:** Refers to whether you want the SNP that weren’t contained in a long enough ROH window to be removed.
+- **REMOVE_SNP:** Refers to whether you want the SNP that weren’t contained in a long enough ROH window to be removed. The two options are 'yes' or 'no'.
 - **OUT_FILE:** Name of output files.
 
 ## Output Files
