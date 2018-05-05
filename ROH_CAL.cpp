@@ -155,14 +155,14 @@ int main(int argc, char* argv[])
         {
             size_t pos = parm[search].find(":", 0); parm[search].erase(0, pos + 2);
             parm[search].erase(remove(parm[search].begin(), parm[search].end(), ' '), parm[search].end()); roh_cutoff = atoi(parm[search].c_str());
+            if(roh_cutoff > 2000)
+            {
+                cout << endl << "Too large of a ROH cutoff (" << roh_cutoff << "), should be in Megabases!!" << endl; exit (EXIT_FAILURE);
+            }
             roh_cutoff = roh_cutoff * 1000000;
             log_file << "ROH cutoff: \t\t\t" << "'" << roh_cutoff << "'" << endl; break;
         }
         search++; if(search >= parm.size()){cout << endl << "Couldn't find 'ROH_CUTOFF:' variable in parameter file!" << endl; exit (EXIT_FAILURE);}
-    }
-    if(roh_cutoff > 200000000)
-    {
-        cout << endl << "Too large of a ROH cutoff (" << roh_cutoff / 1000000 << "), should be in Megabases!!" << endl; exit (EXIT_FAILURE);
     }
     search = 0;
     while(1)
@@ -172,6 +172,10 @@ int main(int argc, char* argv[])
         {
             size_t pos = parm[search].find(":", 0); parm[search].erase(0, pos + 1);
             parm[search].erase(remove(parm[search].begin(), parm[search].end(), ' '), parm[search].end()); roh_threshold = atoi(parm[search].c_str());
+            if(roh_threshold < 1 || roh_threshold > 5)
+            {
+                cout << endl << "ROH threshold (" << roh_threshold << ") is outside of bounds!!" << endl; exit (EXIT_FAILURE);
+            }
             log_file << "ROH Threshold: \t\t\t" << "'" << roh_threshold << "'" << endl; break;
         }
         search++;
@@ -198,6 +202,7 @@ int main(int argc, char* argv[])
             log_file << "Remove SNP: \t\t\t" << "'" << RemoveSNP << "'" << " (Default)" << endl; break;
         }
     }
+    if(RemoveSNP != "yes" && RemoveSNP != "no"){cout << endl << "Remove SNP parameter isn't an option!!" << endl; exit (EXIT_FAILURE);}
     search = 0;
     while(1)
     {
@@ -238,14 +243,51 @@ int main(int argc, char* argv[])
     for(int i = 0; i < numbers.size(); i++)
     {
         string temp = numbers[i];                       // grab a line
-        size_t pos = temp.find(" ", 0);                 // Find position where delimiter is at
-        string tempa = temp.substr(0,pos);              // grab part
-        chr[i] = atoi(tempa.c_str());                   // Convert it to an integer
-        temp.erase(0, pos+1);                           // Erase phenotype from temp and delimeter
-        position[i] = atoi(temp.c_str());               // Convert it to an integer
-        index[i] = i;
+        /* Check to see if tab delimeter exists */
+        size_t pos = temp.find("\t", 0);                 // Find position where delimiter is at
+        if(pos != std::string::npos){cout << endl << "Delimeter in Map file is a tab!! Needs to be a space." << endl; exit (EXIT_FAILURE);}
+        else{
+            vector < string > solvervariables(31,"");
+            for(int j = 0; j < 31; j++)
+            {
+                size_t pos = temp.find(" ",0);
+                solvervariables[j] = temp.substr(0,pos);
+                solvervariables[j].erase(remove(solvervariables[j].begin(), solvervariables[j].end(), ' '),solvervariables[j].end());
+                if(pos != std::string::npos){temp.erase(0, pos + 1);}
+                if(pos == std::string::npos){temp.clear(); j = 31;}
+            }
+            int start = 0;
+            while(start < solvervariables.size())
+            {
+                if(solvervariables[start] == ""){solvervariables.erase(solvervariables.begin()+start);}
+                if(solvervariables[start] != ""){start++;}
+            }
+            if(solvervariables.size() != 2)
+            {
+                cout<<endl<<"Map file did not get parsed out to chr and pos correctly (Line"<< i+1 << ")!!"<<endl;
+                exit (EXIT_FAILURE);
+            }
+            chr[i] = atoi(solvervariables[0].c_str());          // Convert it to an integer
+            position[i] = atoi(solvervariables[1].c_str());                   // Convert it to an integer
+            index[i] = i;
+        }
     }
+    log_file << "       - First line got parsed out to: " << endl;
+    log_file << "           - Chromosome: '" << chr[0] << "'" << endl;
+    log_file << "           - Position: '" << position[0] << "'" << endl;
     numbers.clear();                                    // clear vector that holds each row
+    /* Double check to make sure it is ordered chr and pos */
+    for(int i = 1; i < chr.size(); i++)
+    {
+        if(chr[i] == chr[i-1])
+        {
+            if(position[i] < position[i-1])
+            {
+                cout<<endl<<"Map file is not sorted chromosome then position (Look at line "<<i<<" "<<i-1<<")!!"<<endl;
+                exit (EXIT_FAILURE);
+            }
+        }
+    }
     vector<ROH_Index> roh_index;
     /* Create index to grab correct columns from genotype file when constructing ROH and Autozygosity*/
     for(int i = 0; i < rows; i++)
@@ -351,10 +393,32 @@ int main(int argc, char* argv[])
         if(linenum == 1){cout << "- Number of lines read: " << endl;}
         string ID;                                              /* Animal ID */
         vector <double> roh_status(roh_index.size(),0);         /* status of roh 0 is not and 1 is in roh */
-        size_t pos = line.find(" ", 0);                         /* Find position where delimiter is at */
-        ID = line.substr(0,pos);                                /* Place in phenotype vector need to make string to double */
-        line.erase(0, pos + 1);                                 /* Erase phenotype from temp and delimeter */
-        string geno = line;                                     /* Only thing that is left in temp is genotype string */
+        /* Check to see if tab delimeter exists */
+        size_t pos = line.find("\t", 0);                 // Find position where delimiter is at
+        if(pos != std::string::npos){cout << endl << "Delimeter in Genotype file is a tab!! Needs to be a space." << endl; exit (EXIT_FAILURE);}
+        /* Check to make sure it has two column ID and genotype */
+        vector < string > solvervariables(31,"");
+        for(int j = 0; j < 31; j++)
+        {
+            size_t pos = line.find(" ",0);
+            solvervariables[j] = line.substr(0,pos);
+            solvervariables[j].erase(remove(solvervariables[j].begin(), solvervariables[j].end(), ' '),solvervariables[j].end());
+            if(pos != std::string::npos){line.erase(0, pos + 1);}
+            if(pos == std::string::npos){line.clear(); j = 31;}
+        }
+        int start = 0;
+        while(start < solvervariables.size())
+        {
+            if(solvervariables[start] == ""){solvervariables.erase(solvervariables.begin()+start);}
+            if(solvervariables[start] != ""){start++;}
+        }
+        if(solvervariables.size() != 2)
+        {
+            cout<<endl<<"Genotype file did not get parsed out to chr and pos correctly (Line"<< i+1 << ")!!"<<endl;
+            exit (EXIT_FAILURE);
+        }
+        ID = solvervariables[0];                                /* Save ID */
+        string geno = solvervariables[1];                              /* Save Genotype File */
         vector < int > genotypes(geno.size(),0);                /* Array to store genotypes */
         vector < int > auto_status(geno.size(),5);              /* Vector to store autozygosity genotypes */
         double homozygosity = 0.0;
